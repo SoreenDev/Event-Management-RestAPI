@@ -4,38 +4,20 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
+use App\Http\Traits\CanLoadRelationship;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use function Symfony\Component\Translation\t;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+   use CanLoadRelationship;
+   protected array $relations = ['user','attendees','attendees.user'];
     public function index()
     {
-        $releations = ['user','attendees','attendees.user'];
-        $query = Event::query();
-        $this->shoudIncludeRelation($releations[2]);
-        foreach ($releations as $relation)
-        {
-            $query->when(
-                $this->shoudIncludeRelation($relation),
-                fn($q)=> $q->with($relation)
-            );
-        }
+
+        $query = $this->LoadRelationship(Event::query());
         return EventResource::collection( $query->paginate() );
-    }
-
-    protected function shoudIncludeRelation($relation):bool
-    {
-        $include = Request()->query('include');
-        if( !$include) {
-            return false;
-        }
-        $relations = array_map('trim',explode(',',$include));
-        return in_array($relation , $relations);
-
     }
 
     /**
@@ -53,10 +35,8 @@ class EventController extends Controller
                ]
            ),
             'user_id' =>1
-
         ]);
-        $event->load('user','attendees');
-        return new EventResource( $event );
+        return new EventResource( $this->LoadRelationship($event) );
     }
 
     /**
@@ -64,8 +44,7 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        $event->load('user','attendees');
-        return new EventResource($event);
+        return new EventResource($this->LoadRelationship($event));
     }
 
     /**
@@ -83,8 +62,7 @@ class EventController extends Controller
                 ]
             ));
 
-        $event->load('user','attendees');
-        return new EventResource($event);
+        return new EventResource($this->LoadRelationship($event));
     }
 
     /**
