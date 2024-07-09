@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
 use App\Http\Traits\CanLoadRelationship;
 use App\Models\Event;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use function Symfony\Component\Translation\t;
 
 class EventController extends Controller
@@ -54,9 +56,17 @@ class EventController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * @throws AuthorizationException
      */
     public function update(Request $request, Event $event)
     {
+
+//        if (Gate::denies('event-update' , $event)){
+//            abort(403, 'yuor not authorized to this event !');
+//        }
+
+        $this->authorize('event-update',$event);
+
         $event->update(
             $request->validate(
                 [
