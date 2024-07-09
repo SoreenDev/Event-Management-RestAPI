@@ -44,5 +44,12 @@ class AuthController extends Controller
             'token' => $token ?? 'faild'
         ]);
     }
+
+    public function logout(Request $request)
+    {$request->user()->tokens()->delete() ;
+        return response()->json([
+            'message' => 'successful delete tokens!'
+        ]);
+    }
 }
 
