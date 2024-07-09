@@ -19,6 +19,7 @@ class EventController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except('index','show');
+        $this->authorizeResource(Event::class);
     }
     public function index()
     {
@@ -65,7 +66,7 @@ class EventController extends Controller
 //            abort(403, 'yuor not authorized to this event !');
 //        }
 
-        $this->authorize('event-update',$event);
+//        $this->authorize('event-update',$event);
 
         $event->update(
             $request->validate(
