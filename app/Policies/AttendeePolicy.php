@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Attrndee;
+use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -20,7 +20,7 @@ class AttendeePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(?User $user, Attrndee $attrndee): bool
+    public function view(?User $user, Attendee $attrndee): bool
     {
        return true ;
     }
@@ -36,7 +36,7 @@ class AttendeePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Attrndee $attrndee,Event $event): bool
+    public function update(User $user, Attendee $attrndee,Event $event): bool
     {
         return $user->id === $attrndee->user_id || $user->id === $event->user_id;
     }
@@ -44,9 +44,9 @@ class AttendeePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Attrndee $attrndee,Event $event): bool
+    public function delete(User $user, Attendee $attendee): bool
     {
-        return $user->id === $attrndee->user_id || $user->id === $event->user_id;
+        return $user->id === $attendee->user_id || $user->id === $attendee->event->user_id;
     }
 
     /**
