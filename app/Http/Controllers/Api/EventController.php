@@ -8,7 +8,9 @@ use App\Http\Traits\CanLoadRelationship;
 use App\Models\Event;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Queue\Jobs\Job;
 use Illuminate\Support\Facades\Gate;
+use Spatie\QueryBuilder\QueryBuilder;
 use function Symfony\Component\Translation\t;
 
 class EventController extends Controller
@@ -23,9 +25,13 @@ class EventController extends Controller
     }
     public function index()
     {
+        $query = QueryBuilder::for(Event::class)
+            ->allowedIncludes(['user','attendees','attendees.user'])
+            ->get();
+//        dd($query->all());
 
-        $query = $this->LoadRelationship(Event::query());
-        return EventResource::collection( $query->paginate() );
+//        $query = $this->LoadRelationship(Event::query());
+        return EventResource::collection( $query->all());
     }
 
     /**
